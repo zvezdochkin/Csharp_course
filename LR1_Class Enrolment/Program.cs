@@ -74,7 +74,7 @@ class Program
             {
                 if (courses[i] == courseName)
                 {
-                    throw new InvalidOperationException("Курс уже существует.");
+                    throw new InvalidOperationException("Курс уже существует");
                 }
             }
 
