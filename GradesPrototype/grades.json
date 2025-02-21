@@ -1,0 +1,42 @@
+[
+  {
+    "Name": "Ivan Ivanov",
+    "Grades": [
+      {
+        "Subject": 0,
+        "Score": 5,
+        "Date": "2025-02-21T20:54:57.60743+08:00"
+      },
+      {
+        "Subject": 1,
+        "Score": 4,
+        "Date": "2025-02-21T20:55:09.4590894+08:00"
+      },
+      {
+        "Subject": 2,
+        "Score": 3,
+        "Date": "2025-02-21T20:55:16.8620229+08:00"
+      }
+    ]
+  },
+  {
+    "Name": "Maria Vasilyeva",
+    "Grades": [
+      {
+        "Subject": 1,
+        "Score": 5,
+        "Date": "2025-02-21T20:55:34.4830156+08:00"
+      }
+    ]
+  },
+  {
+    "Name": "Kirill Petrov",
+    "Grades": [
+      {
+        "Subject": 2,
+        "Score": 4,
+        "Date": "2025-02-21T20:55:51.6940093+08:00"
+      }
+    ]
+  }
+]
