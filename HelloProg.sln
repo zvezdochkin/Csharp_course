@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ClassEnrolment", "ClassEnro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GradesPrototype", "GradesPrototype\GradesPrototype.csproj", "{DDFBFA63-EA80-48C8-A5C7-969463A3611D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EntityFW", "EntityFW\EntityFW.csproj", "{259116BD-166C-4B23-BD26-FD6D6793BF85}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{DDFBFA63-EA80-48C8-A5C7-969463A3611D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DDFBFA63-EA80-48C8-A5C7-969463A3611D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DDFBFA63-EA80-48C8-A5C7-969463A3611D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{259116BD-166C-4B23-BD26-FD6D6793BF85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{259116BD-166C-4B23-BD26-FD6D6793BF85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{259116BD-166C-4B23-BD26-FD6D6793BF85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{259116BD-166C-4B23-BD26-FD6D6793BF85}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
