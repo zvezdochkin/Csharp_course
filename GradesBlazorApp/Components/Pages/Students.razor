@@ -1,0 +1,45 @@
+﻿@page "/students"
+@using GradesBlazorApp.Entities
+@using GradesBlazorApp.AppContext
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<ApplicationContext> DbFactory
+
+<PageTitle>Студенты</PageTitle>
+
+<h1>Студенты</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Имя</th>
+            <th>Фамилия</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var student in students)
+        {
+            <tr>
+                <td>@student.StudentId</td>
+                <td>@student.FirstName</td>
+                <td>@student.LastName</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private List<Student> students = new();
+    private Student currentStudent = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadStudents();
+    }
+
+    private async Task LoadStudents()
+    {
+        using var context = DbFactory.CreateDbContext();
+        students = await context.Students.ToListAsync();
+    }
+}

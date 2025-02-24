@@ -1,0 +1,42 @@
+﻿@page "/subjects"
+@using GradesBlazorApp.Entities
+@using GradesBlazorApp.AppContext
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<ApplicationContext> DbFactory
+
+<PageTitle>Предметы</PageTitle>
+
+<h1>Предметы</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Название</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var subject in subjects)
+        {
+            <tr>
+                <td>@subject.SubjectId</td>
+                <td>@subject.Name</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private List<Subject> subjects = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadSubjects();
+    }
+
+    private async Task LoadSubjects()
+    {
+        using var context = DbFactory.CreateDbContext();
+        subjects = await context.Subjects.ToListAsync();
+    }
+}

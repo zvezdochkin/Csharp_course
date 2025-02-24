@@ -1,0 +1,51 @@
+﻿@page "/grades"
+@using GradesBlazorApp.Entities
+@using GradesBlazorApp.AppContext
+@using Microsoft.EntityFrameworkCore
+@inject IDbContextFactory<ApplicationContext> DbFactory
+
+<PageTitle>Оценки</PageTitle>
+
+<h1>Оценки</h1>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Оценка</th>
+            <th>Дата</th>
+            <th>Студент</th>
+            <th>Предмет</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var grade in grades)
+        {
+            <tr>
+                <td>@grade.GradeId</td>
+                <td>@grade.Score</td>
+                <td>@grade.Date.ToShortDateString()</td>
+                <td>@grade.Student?.FirstName @grade.Student?.LastName</td>
+                <td>@grade.Subject?.Name</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+@code {
+    private List<Grade> grades = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadGrades();
+    }
+
+    private async Task LoadGrades()
+    {
+        using var context = DbFactory.CreateDbContext();
+        grades = await context.Grades
+        .Include(g => g.Student)
+        .Include(g => g.Subject)
+        .ToListAsync();
+    }
+}
