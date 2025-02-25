@@ -3,16 +3,49 @@
 @using GradesBlazorApp.AppContext
 @using Microsoft.EntityFrameworkCore
 @inject IDbContextFactory<ApplicationContext> DbFactory
+@using Microsoft.AspNetCore.Components.Web
+@rendermode RenderMode.InteractiveServer
 
 <PageTitle>Предметы</PageTitle>
 
 <h1>Предметы</h1>
+
+<button class="btn btn-primary mb-3" @onclick="() => ShowAddForm(true)">Добавить предмет</button>
+
+@if (showAddForm)
+{
+    <div class="card mb-3">
+        <div class="card-body">
+            <h4 class="card-title">Добавление предмета</h4>
+            <EditForm Model="@currentSubject" OnValidSubmit="@AddSubject">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="form-group">
+                    <label>Название</label>
+                    <InputText class="form-control" @bind-Value="currentSubject.Name" />
+                    <ValidationMessage For="@(() => currentSubject.Name)" />
+                </div>
+                <div class="mt-2">
+                    <button type="submit" class="btn btn-success">Сохранить</button>
+                    <button type="button" class="btn btn-secondary" @onclick="() => ShowAddForm(false)">Отмена</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(message))
+{
+    <div class="alert @messageClass">@message</div>
+}
 
 <table class="table">
     <thead>
         <tr>
             <th>ID</th>
             <th>Название</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -21,6 +54,9 @@
             <tr>
                 <td>@subject.SubjectId</td>
                 <td>@subject.Name</td>
+                <td>
+                    <button class="btn btn-danger btn-sm" @onclick="() => DeleteSubject(subject.SubjectId)">Удалить</button>
+                </td>
             </tr>
         }
     </tbody>
@@ -28,6 +64,10 @@
 
 @code {
     private List<Subject> subjects = new();
+    private Subject currentSubject = new();
+    private bool showAddForm = false;
+    private string message = string.Empty;
+    private string messageClass = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -38,5 +78,53 @@
     {
         using var context = DbFactory.CreateDbContext();
         subjects = await context.Subjects.ToListAsync();
+    }
+
+    private void ShowAddForm(bool show)
+    {
+        showAddForm = show;
+        if (!show) currentSubject = new Subject();
+        StateHasChanged();
+    }
+
+    private async Task AddSubject()
+    {
+        using var context = DbFactory.CreateDbContext();
+        try
+        {
+            context.Subjects.Add(currentSubject);
+            await context.SaveChangesAsync();
+            ShowMessage("Предмет успешно добавлен!", "alert-success");
+            await LoadSubjects();
+            ShowAddForm(false);
+        }
+        catch (Exception ex)
+        {
+            ShowMessage($"Ошибка при добавлении предмета: {ex.Message}", "alert-danger");
+        }
+    }
+
+    private async Task DeleteSubject(int subjectId)
+    {
+        using var context = DbFactory.CreateDbContext();
+        var subject = await context.Subjects.FindAsync(subjectId);
+        if (subject != null)
+        {
+            context.Subjects.Remove(subject);
+            await context.SaveChangesAsync();
+            await LoadSubjects();
+            ShowMessage("Предмет успешно удален!", "alert-success");
+        }
+        else
+        {
+            ShowMessage("Предмет не найден!", "alert-danger");
+        }
+    }
+
+    private void ShowMessage(string msg, string alertClass)
+    {
+        message = msg;
+        messageClass = alertClass;
+        StateHasChanged();
     }
 }

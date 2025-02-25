@@ -3,10 +3,47 @@
 @using GradesBlazorApp.AppContext
 @using Microsoft.EntityFrameworkCore
 @inject IDbContextFactory<ApplicationContext> DbFactory
+@using Microsoft.AspNetCore.Components.Web
+@rendermode RenderMode.InteractiveServer
 
 <PageTitle>Студенты</PageTitle>
 
 <h1>Студенты</h1>
+
+<button class="btn btn-primary mb-3" @onclick="() => ShowAddForm(true)">Добавить студента</button>
+
+@if (showAddForm)
+{
+    <div class="card mb-3">
+        <div class="card-body">
+            <h4 class="card-title">Добавление студента</h4>
+            <EditForm Model="@currentStudent" OnValidSubmit="@SaveStudent">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="form-group">
+                    <label>Имя</label>
+                    <InputText class="form-control" @bind-Value="currentStudent.FirstName" />
+                    <ValidationMessage For="@(() => currentStudent.FirstName)" />
+                </div>
+                <div class="form-group">
+                    <label>Фамилия</label>
+                    <InputText class="form-control" @bind-Value="currentStudent.LastName" />
+                    <ValidationMessage For="@(() => currentStudent.LastName)" />
+                </div>
+                <div class="mt-2">
+                    <button type="submit" class="btn btn-success">Сохранить</button>
+                    <button type="button" class="btn btn-secondary" @onclick="() => ShowAddForm(false)">Отмена</button>
+                </div>
+            </EditForm>
+        </div>
+    </div>
+}
+
+@if (!string.IsNullOrEmpty(message))
+{
+    <div class="alert @messageClass">@message</div>
+}
 
 <table class="table">
     <thead>
@@ -14,6 +51,7 @@
             <th>ID</th>
             <th>Имя</th>
             <th>Фамилия</th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
@@ -23,6 +61,9 @@
                 <td>@student.StudentId</td>
                 <td>@student.FirstName</td>
                 <td>@student.LastName</td>
+                <td>
+                    <button class="btn btn-danger btn-sm" @onclick="() => DeleteStudent(student.StudentId)">Удалить</button>
+                </td>
             </tr>
         }
     </tbody>
@@ -31,6 +72,9 @@
 @code {
     private List<Student> students = new();
     private Student currentStudent = new();
+    private bool showAddForm = false;
+    private string message = string.Empty;
+    private string messageClass = string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
@@ -41,5 +85,53 @@
     {
         using var context = DbFactory.CreateDbContext();
         students = await context.Students.ToListAsync();
+    }
+
+    private void ShowAddForm(bool show)
+    {
+        showAddForm = show;
+        if (!show) currentStudent = new Student();
+        StateHasChanged();
+    }
+
+    private async Task SaveStudent()
+    {
+        using var context = DbFactory.CreateDbContext();
+        try
+        {
+            context.Students.Add(currentStudent);
+            await context.SaveChangesAsync();
+            ShowMessage("Студент успешно добавлен!", "alert-success");
+            await LoadStudents();
+            ShowAddForm(false);
+        }
+        catch (Exception ex)
+        {
+            ShowMessage($"Ошибка при добавлении студента: {ex.Message}", "alert-danger");
+        }
+    }
+
+    private async Task DeleteStudent(int studentId)
+    {
+        using var context = DbFactory.CreateDbContext();
+        var student = await context.Students.FindAsync(studentId);
+        if (student != null)
+        {
+            context.Students.Remove(student);
+            await context.SaveChangesAsync();
+            await LoadStudents();
+            ShowMessage("Студент успешно удален!", "alert-success");
+        }
+        else
+        {
+            ShowMessage("Студент не найден!", "alert-danger");
+        }
+    }
+
+    private void ShowMessage(string msg, string alertClass)
+    {
+        message = msg;
+        messageClass = alertClass;
+        StateHasChanged();
     }
 }
